@@ -432,15 +432,7 @@ async fn mint_for(
         Ok(BlockRes(res)) => match res {
             Some(result_encode_block) => match result_encode_block {
                 Ok(encode_block) => encode_block,
-                Err(e) => {
-                    let storage = match Principal::from_text(e.to_string()) {
-                        Ok(p) => p,
-                        Err(_) => return Err(TxError::Other),
-                    };
-                    let storage_canister = match CanisterId::new(PrincipalId::from(storage)) {
-                        Ok(c) => c,
-                        Err(_) => return Err(TxError::Other),
-                    };
+                Err(storage_canister) => {
                     let response: Result<BlockRes, (Option<i32>, String)> =
                         call_with_cleanup(storage_canister, "get_block_pb", protobuf, block_height)
                             .await;
